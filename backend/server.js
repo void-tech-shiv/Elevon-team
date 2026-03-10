@@ -31,8 +31,8 @@ app.get('/', (req, res) => {
   res.send('Elevon API is running');
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
+if (process.env.NODE_ENV !== 'production' || process.env.RENDER) {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
   });
 }
