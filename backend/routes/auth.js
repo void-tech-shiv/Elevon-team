@@ -84,7 +84,7 @@ router.post('/student/login', async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error during local database operation' });
   }
 });
 
@@ -114,7 +114,7 @@ router.post('/admin/login', async (req, res) => {
     });
   } catch (error) {
     console.error('Admin login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message || 'Server error during admin verification' });
   }
 });
 
