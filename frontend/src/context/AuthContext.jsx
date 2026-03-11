@@ -6,32 +6,35 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null); // 'student' or 'admin'
   const [token, setToken] = useState(localStorage.getItem('elevon_token') || null);
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem('elevon_user');
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const [role, setRole] = useState(localStorage.getItem('elevon_role') || null);
   const [loading, setLoading] = useState(true);
 
   // Setup axios default auth header
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
-    delete axios.defaults.headers.common['Authorization'];
-  }
-
   useEffect(() => {
-    // If we have a token, we could fetch user profile to verify.
-    // For simplicity, we just rely on local storage for role/user until protected route fails.
-    const storedUser = localStorage.getItem('elevon_user');
-    const storedRole = localStorage.getItem('elevon_role');
-    
-    if (token && storedUser && storedRole) {
-      setUser(JSON.parse(storedUser));
-      setRole(storedRole);
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
-      logout();
+      delete axios.defaults.headers.common['Authorization'];
     }
+    
+    // Check if token and basic info exist
+    if (!token || !user || !role) {
+      // If any essential part is missing, ensure clean state but don't force logout 
+      // if we are still initializing (unless strictly required).
+      // For now, we'll just set loading to false.
+    }
+    
     setLoading(false);
-  }, [token]);
+  }, [token, user, role]);
 
   const login = (newToken, newUser, newRole) => {
     localStorage.setItem('elevon_token', newToken);
