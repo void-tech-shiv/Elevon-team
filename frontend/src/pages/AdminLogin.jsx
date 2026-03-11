@@ -32,34 +32,38 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4">
+    <div className="relative flex items-center justify-center min-h-screen px-4 overflow-hidden bg-gray-950">
+      {/* Cyber Grid Background */}
+      <div className="cyber-grid"></div>
+      
+      {/* Abstract Red/Orange Orb for Admin Theme */}
+      <div className="absolute top-[30%] left-[30%] w-[600px] h-[600px] bg-red-600/10 rounded-full blur-[150px] animate-float pointer-events-none"></div>
+
       <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="glass-panel p-8 max-w-sm w-full relative overflow-hidden"
+        initial={{ opacity: 0, scale: 0.95, y: -20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: -20 }}
+        className="glass-panel-neon p-10 max-w-sm w-full relative z-10 border-t-pink-500/50"
       >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
-        
-        <div className="flex justify-center mb-4 text-orange-400">
-          <ShieldCheck size={48} />
+        <div className="flex justify-center mb-6 text-pink-400 drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]">
+          <ShieldCheck size={56} strokeWidth={1.5} />
         </div>
-        <h2 className="text-2xl font-bold mb-6 text-center">Admin Access</h2>
+        <h2 className="text-3xl font-black mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 tracking-widest uppercase">Admin Access</h2>
         
         {error && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 bg-red-500/20 border border-red-500/50 text-red-200 p-3 rounded-lg mb-6 text-sm">
-            <AlertCircle size={16} />
-            <span>{error}</span>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-3 bg-red-900/30 border border-red-500/50 text-red-200 p-4 rounded-xl mb-6 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+            <AlertCircle size={20} className="shrink-0" />
+            <span className="text-sm font-medium">{error}</span>
           </motion.div>
         )}
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleLogin} className="flex flex-col gap-6">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">Admin Username</label>
+            <label className="block text-xs font-bold mb-2 text-pink-200 uppercase tracking-wider">Admin Key</label>
             <input 
               type="text" 
               required
-              className="input-glass" 
+              className="input-neon focus:border-pink-500 focus:shadow-[0_0_15px_rgba(236,72,153,0.2)]" 
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -67,11 +71,11 @@ const AdminLogin = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">Password</label>
+            <label className="block text-xs font-bold mb-2 text-pink-200 uppercase tracking-wider">Passphrase</label>
             <input 
               type="password" 
               required
-              className="input-glass" 
+              className="input-neon focus:border-pink-500 focus:shadow-[0_0_15px_rgba(236,72,153,0.2)]" 
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -79,18 +83,18 @@ const AdminLogin = () => {
           </div>
 
           <motion.button 
-            whileHover={{ scale: 1.02, boxShadow: "0 0 15px rgba(249, 115, 22, 0.4)" }}
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-600 font-semibold text-white shadow-lg mt-4 flex justify-center items-center h-12"
+            className="w-full py-4 rounded-xl bg-pink-950/40 border border-pink-400/50 font-bold text-pink-50 shadow-[0_0_15px_rgba(236,72,153,0.2)] hover:shadow-[0_0_25px_rgba(236,72,153,0.6)] hover:bg-pink-900/60 transition-all duration-300 mt-2 flex justify-center items-center h-14 tracking-widest uppercase"
             type="submit"
             disabled={loading}
           >
-            {loading ? <Loader2 className="animate-spin" /> : 'Secure Login'}
+            {loading ? <Loader2 className="animate-spin" /> : 'Authenticate'}
           </motion.button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-400">
-          <Link to="/" className="hover:text-white underline">Back to Home</Link>
+        <p className="mt-8 text-center text-xs text-pink-200/50 font-medium uppercase tracking-widest">
+          <Link to="/" className="hover:text-pink-300 transition-colors">Abort & Return</Link>
         </p>
       </motion.div>
     </div>

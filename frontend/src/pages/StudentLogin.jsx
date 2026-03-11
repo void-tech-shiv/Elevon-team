@@ -53,30 +53,36 @@ const StudentLogin = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4">
+    <div className="relative flex items-center justify-center min-h-screen px-4 overflow-hidden bg-gray-950">
+      {/* Cyber Grid Background */}
+      <div className="cyber-grid"></div>
+      
+      {/* Abstract Orbs */}
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/20 rounded-full blur-[120px] animate-float mix-blend-screen pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-float mix-blend-screen pointer-events-none" style={{ animationDelay: '2s' }}></div>
+
       <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.9 }}
-        className="glass-panel p-8 max-w-md w-full relative overflow-hidden"
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className="glass-panel-neon p-10 max-w-md w-full relative z-10"
       >
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
-        <h2 className="text-3xl font-bold mb-6 text-center">Student Login</h2>
+        <h2 className="text-4xl font-black mb-8 text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-purple-400 neon-text-glow tracking-widest uppercase">Student Login</h2>
         
         {error && (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 bg-red-500/20 border border-red-500/50 text-red-200 p-3 rounded-lg mb-6">
-            <AlertCircle size={20} />
-            <span className="text-sm">{error}</span>
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-2 bg-red-900/30 border border-red-500/50 text-red-200 p-4 rounded-xl mb-6 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+            <AlertCircle size={20} className="shrink-0" />
+            <span className="text-sm font-medium">{error}</span>
           </motion.div>
         )}
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+        <form onSubmit={handleLogin} className="flex flex-col gap-5">
           <div>
-            <label className="block text-sm font-medium mb-1 text-indigo-100">Student ID or Email</label>
+            <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Student ID or Email</label>
             <input 
               type="text" 
               required
-              className="input-glass" 
+              className="input-neon" 
               placeholder="Enter ID or Email"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
@@ -84,11 +90,11 @@ const StudentLogin = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1 text-indigo-100">Password</label>
+            <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Password</label>
             <input 
               type="password" 
               required
-              className="input-glass" 
+              className="input-neon" 
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -96,18 +102,18 @@ const StudentLogin = () => {
           </div>
 
           <div className="mt-2">
-            <label className="block text-sm font-medium mb-1 text-indigo-100">Verification Code</label>
-            <div className="flex gap-4 items-center">
-              <div className="bg-white/10 px-4 py-2 font-mono text-xl tracking-widest rounded border border-white/20 select-none line-through decoration-indigo-400">
+            <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Verification Code</label>
+            <div className="flex gap-4 items-center mb-3">
+              <div className="bg-black/50 px-6 py-3 font-mono text-2xl tracking-[0.2em] rounded-lg border border-cyan-500/30 text-cyan-50 select-none line-through decoration-purple-500 shadow-inner">
                 {expectedCaptcha}
               </div>
-              <button onClick={handleRefreshCaptcha} className="text-xs text-indigo-300 hover:text-white underline">Refresh</button>
+              <button onClick={handleRefreshCaptcha} className="text-xs text-purple-400 hover:text-purple-300 uppercase tracking-wider border-b border-transparent hover:border-purple-400 transition-all font-bold">Refresh</button>
             </div>
             <input 
               type="text" 
               required
-              className="input-glass mt-2" 
-              placeholder="Enter code above"
+              className="input-neon text-center letter-spacing-wide tracking-widest font-mono" 
+              placeholder="CODE"
               value={captcha}
               onChange={(e) => setCaptcha(e.target.value.toUpperCase())}
             />
@@ -116,16 +122,16 @@ const StudentLogin = () => {
           <motion.button 
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="btn-primary mt-6 flex justify-center items-center h-12"
+            className="btn-neon-primary w-full mt-4 h-14"
             type="submit"
             disabled={loading}
           >
-            {loading ? <Loader2 className="animate-spin" /> : 'Login'}
+            {loading ? <Loader2 className="animate-spin" /> : 'INITIALIZE LOGIN'}
           </motion.button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-300">
-          Don't have an account? <Link to="/signup" className="text-indigo-400 hover:text-white underline">Sign up</Link>
+        <p className="mt-8 text-center text-sm text-cyan-100/60 uppercase tracking-wider font-medium">
+          No access? <Link to="/signup" className="text-cyan-400 hover:text-cyan-300 hover:neon-text-glow transition-all ml-2 border-b border-cyan-500/30 pb-1">Sign up</Link>
         </p>
       </motion.div>
     </div>

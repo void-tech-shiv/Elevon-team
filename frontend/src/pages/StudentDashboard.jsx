@@ -19,7 +19,6 @@ const StudentDashboard = () => {
   const [resources, setResources] = useState([]);
   const [notices, setNotices] = useState([]);
 
-  // For profile edit
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ phone: '', bio: '', skills: '' });
 
@@ -64,7 +63,6 @@ const StudentDashboard = () => {
       });
       setProfile(res.data);
       setIsEditing(false);
-      // Update local storage user just in case
       login(token, { ...user, name: res.data.name }, 'student');
     } catch (error) {
       alert('Failed to update profile');
@@ -74,6 +72,7 @@ const StudentDashboard = () => {
   const handleUploadProject = async (e) => {
     e.preventDefault();
     const form = e.target;
+    // Gather logic
     const title = form.title.value;
     const description = form.description.value;
     const githubLink = form.githubLink.value;
@@ -83,7 +82,6 @@ const StudentDashboard = () => {
     if (!file) return alert('Please select a project PDF file');
 
     try {
-      // 1. Upload PDF to Cloudinary
       const formData = new FormData();
       formData.append('file', file);
       const uploadRes = await axios.post(`${API_BASE_URL}/api/upload`, formData, {
@@ -92,7 +90,6 @@ const StudentDashboard = () => {
       
       const pdfLink = uploadRes.data.url;
 
-      // 2. Submit project request
       await axios.post(`${API_BASE_URL}/api/projects`, {
         title, description, githubLink, demoLink, pdfLink
       });
@@ -108,114 +105,122 @@ const StudentDashboard = () => {
   };
 
   const tabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'dashboard', label: 'Overview', icon: LayoutDashboard },
     { id: 'profile', label: 'My Profile', icon: User },
-    { id: 'my-projects', label: 'My Projects', icon: FolderGit2 },
-    { id: 'upload', label: 'Upload Project', icon: UploadCloud },
+    { id: 'my-projects', label: 'Projects', icon: FolderGit2 },
+    { id: 'upload', label: 'Upload', icon: UploadCloud },
     { id: 'resources', label: 'Resources', icon: FileText },
     { id: 'notices', label: 'Notices', icon: Bell },
   ];
 
-  if (!profile) return <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">Loading...</div>;
+  if (!profile) return <div className="min-h-screen flex items-center justify-center bg-gray-950 text-cyan-400 font-mono tracking-widest uppercase">INITIALIZING SYSTEM...</div>;
 
   const approvedProjects = projects.filter(p => p.status === 'Approved');
 
   return (
-    <div className="min-h-screen flex bg-slate-900">
+    <div className="relative min-h-screen flex bg-gray-950 overflow-hidden text-cyan-50">
+      <div className="cyber-grid"></div>
+      
+      {/* Background Glow */}
+      <div className="absolute top-[0%] left-[50%] w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2 mix-blend-screen"></div>
+
       {/* Sidebar */}
-      <div className="w-64 glass-panel m-4 flex flex-col justify-between border-white/10 shrink-0">
+      <div className="w-64 sidebar-neon m-4 flex flex-col justify-between rounded-2xl shrink-0 z-10 transition-all">
         <div>
-          <div className="p-6 border-b border-white/10">
-            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">Student Portal</h2>
-            <p className="text-gray-400 text-sm mt-1 truncate">Hello, {profile.name.split(' ')[0]}</p>
+          <div className="p-6 border-b border-cyan-500/20">
+            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 tracking-widest uppercase neon-text-glow">STUDENT</h2>
+            <p className="text-cyan-200/50 text-xs mt-2 uppercase tracking-widest truncate">ID: {profile.name.split(' ')[0]}</p>
           </div>
           <nav className="p-4 space-y-2">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 uppercase tracking-wider text-xs font-bold ${
                   activeTab === tab.id 
-                  ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 border border-indigo-500/30' 
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  ? 'bg-cyan-950/60 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.15)] translate-x-1' 
+                  : 'text-cyan-100/40 hover:text-cyan-200 hover:bg-cyan-900/20 hover:border-cyan-500/20 border border-transparent'
                 }`}
               >
-                <tab.icon size={20} />
-                <span className="font-medium text-sm">{tab.label}</span>
+                <tab.icon size={18} className={activeTab === tab.id ? "text-cyan-400" : "opacity-70"} />
+                <span>{tab.label}</span>
               </button>
             ))}
-            <Link to="/showcase" className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all text-sm font-medium">
-              <Globe size={20} />
+            <Link to="/showcase" className="mt-8 w-full flex items-center gap-4 px-4 py-3 rounded-lg text-purple-300/60 border border-transparent hover:text-purple-300 hover:bg-purple-900/20 hover:border-purple-500/30 transition-all text-xs font-bold uppercase tracking-wider">
+              <Globe size={18} />
               Public Showcase
             </Link>
           </nav>
         </div>
-        <div className="p-4 border-t border-white/10">
+        <div className="p-4 border-t border-cyan-500/20">
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-all font-medium text-sm"
+            className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-red-400/60 hover:text-red-400 border border-transparent hover:bg-red-950/40 hover:border-red-500/40 transition-all font-bold text-xs uppercase tracking-wider"
           >
-            <LogOut size={20} />
-            Logout
+            <LogOut size={18} />
+            Disconnect
           </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-4 pl-0 overflow-y-auto w-full max-w-full">
-        <div className="glass-panel h-full p-8 border-white/10 relative overflow-x-hidden">
+      {/* Main Content Area */}
+      <div className="flex-1 p-4 pl-0 overflow-y-auto w-full max-w-full z-10">
+        <div className="glass-panel-neon h-full p-8 relative overflow-x-hidden">
           
           <AnimatePresence mode="wait">
             
-            {/* DASHBOARD OVERVIEW TAB */}
+            {/* DASHBOARD OVERVIEW */}
             {activeTab === 'dashboard' && (
-              <motion.div key="dashboard" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
-                <h3 className="text-3xl font-bold mb-8">Welcome Back, {profile.name}!</h3>
+              <motion.div key="dashboard" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="space-y-8">
+                <header className="mb-8">
+                  <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200">System Overview</h3>
+                  <p className="text-cyan-200/60 mt-1 uppercase tracking-widest text-sm">Welcome back, {profile.name}</p>
+                </header>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="glass-card p-6 border-l-4 border-l-indigo-500">
-                    <p className="text-gray-400 text-sm font-semibold mb-1">My Projects</p>
-                    <p className="text-4xl font-bold text-white mb-2">{projects.length}</p>
-                    <p className="text-xs text-indigo-300">{approvedProjects.length} Approved</p>
+                  <div className="glass-card-neon p-6 border-l-4 border-l-cyan-400 group">
+                    <p className="text-cyan-200/50 text-xs font-bold uppercase tracking-wider mb-2">My Projects</p>
+                    <p className="text-5xl font-black text-white mb-2 group-hover:neon-text-glow transition-all">{projects.length}</p>
+                    <p className="text-xs text-cyan-400 uppercase tracking-widest">{approvedProjects.length} Approved</p>
                   </div>
-                  <div className="glass-card p-6 border-l-4 border-l-purple-500 cursor-pointer" onClick={() => setActiveTab('resources')}>
-                    <p className="text-gray-400 text-sm font-semibold mb-1">Available Resources</p>
-                    <p className="text-4xl font-bold text-white mb-2">{resources.length}</p>
-                    <p className="text-xs text-purple-300">View study materials</p>
+                  <div className="glass-card-neon p-6 border-l-4 border-l-purple-400 cursor-pointer group" onClick={() => setActiveTab('resources')}>
+                    <p className="text-purple-200/50 text-xs font-bold uppercase tracking-wider mb-2">Resources</p>
+                    <p className="text-5xl font-black text-white mb-2 group-hover:drop-shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all">{resources.length}</p>
+                    <p className="text-xs text-purple-400 uppercase tracking-widest">Available materials</p>
                   </div>
-                  <div className="glass-card p-6 border-l-4 border-l-orange-500 cursor-pointer" onClick={() => setActiveTab('notices')}>
-                    <p className="text-gray-400 text-sm font-semibold mb-1">Unread Notices</p>
-                    <p className="text-4xl font-bold text-white mb-2">{notices.length}</p>
-                    <p className="text-xs text-orange-300">Check latest updates</p>
+                  <div className="glass-card-neon p-6 border-l-4 border-l-orange-400 cursor-pointer group" onClick={() => setActiveTab('notices')}>
+                    <p className="text-orange-200/50 text-xs font-bold uppercase tracking-wider mb-2">Notices</p>
+                    <p className="text-5xl font-black text-white mb-2 group-hover:drop-shadow-[0_0_15px_rgba(249,115,22,0.5)] transition-all">{notices.length}</p>
+                    <p className="text-xs text-orange-400 uppercase tracking-widest">Admin Broadcasts</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-                  <div className="glass-card p-6">
-                    <h4 className="text-xl font-bold mb-4 border-b border-white/10 pb-2">Recent Notices</h4>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+                  <div className="glass-card-neon p-8">
+                    <h4 className="text-sm font-black uppercase tracking-widest mb-6 border-b border-cyan-500/20 pb-4 text-cyan-300">Latest Transmissions</h4>
                     <div className="space-y-4">
                       {notices.slice(0, 3).map(notice => (
-                        <div key={notice._id} className="bg-white/5 p-3 rounded-lg border-l-2 border-orange-500">
-                          <p className="font-semibold text-sm mb-1">{notice.title}</p>
-                          <p className="text-xs text-gray-400 line-clamp-2">{notice.message}</p>
+                        <div key={notice._id} className="bg-black/30 p-4 rounded-xl border border-orange-500/20 hover:border-orange-500/50 transition-colors">
+                          <p className="font-bold text-sm text-orange-100 uppercase tracking-wider mb-1">{notice.title}</p>
+                          <p className="text-xs text-orange-200/60 line-clamp-2 leading-relaxed">{notice.message}</p>
                         </div>
                       ))}
-                      {notices.length === 0 && <p className="text-sm text-gray-500">No recent notices.</p>}
+                      {notices.length === 0 && <p className="text-xs text-cyan-500/50 uppercase tracking-widest text-center py-4">No recent transmissions</p>}
                     </div>
                   </div>
                   
-                  <div className="glass-card p-6">
-                    <h4 className="text-xl font-bold mb-4 border-b border-white/10 pb-2">My Recent Projects</h4>
+                  <div className="glass-card-neon p-8">
+                    <h4 className="text-sm font-black uppercase tracking-widest mb-6 border-b border-cyan-500/20 pb-4 text-cyan-300">Project Activity</h4>
                     <div className="space-y-4">
                       {projects.slice(0, 3).map(p => (
-                        <div key={p._id} className="flex justify-between items-center bg-white/5 p-3 rounded-lg">
-                          <p className="font-semibold text-sm truncate pr-4">{p.title}</p>
-                          <span className={`text-xs px-2 py-1 rounded-full shrink-0 ${p.status === 'Approved' ? 'bg-green-500/20 text-green-300' : p.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-red-500/20 text-red-300'}`}>
+                        <div key={p._id} className="flex justify-between items-center bg-black/30 p-4 rounded-xl border border-cyan-500/20 hover:border-cyan-500/50 transition-colors">
+                          <p className="font-bold text-xs uppercase tracking-wider text-cyan-50 truncate pr-4">{p.title}</p>
+                          <span className={`text-[10px] px-3 py-1 rounded-sm uppercase tracking-widest shrink-0 font-bold border ${p.status === 'Approved' ? 'bg-green-950/40 text-green-400 border-green-500/50' : p.status === 'Pending' ? 'bg-yellow-950/40 text-yellow-400 border-yellow-500/50' : 'bg-red-950/40 text-red-400 border-red-500/50'}`}>
                             {p.status}
                           </span>
                         </div>
                       ))}
-                      {projects.length === 0 && <p className="text-sm text-gray-500">No projects uploaded yet.</p>}
+                      {projects.length === 0 && <p className="text-xs text-cyan-500/50 uppercase tracking-widest text-center py-4">No projects logged</p>}
                     </div>
                   </div>
                 </div>
@@ -224,73 +229,70 @@ const StudentDashboard = () => {
 
             {/* PROFILE TAB */}
             {activeTab === 'profile' && (
-              <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+              <motion.div key="profile" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
                 <div className="flex justify-between items-end mb-8">
-                  <h3 className="text-3xl font-bold">My Profile</h3>
+                  <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200">Personnel Dossier</h3>
                   {!isEditing && (
-                    <button onClick={() => setIsEditing(true)} className="btn-secondary text-sm py-2 px-4 border-indigo-500/30 hover:bg-indigo-500/20">Edit Profile</button>
+                    <button onClick={() => setIsEditing(true)} className="btn-neon-secondary text-xs py-2 px-6">Edit Dossier</button>
                   )}
                 </div>
 
                 {isEditing ? (
-                  <form onSubmit={handleUpdateProfile} className="glass-card p-8 max-w-2xl border border-indigo-500/30">
+                  <form onSubmit={handleUpdateProfile} className="glass-card-neon p-10 max-w-2xl border-cyan-400/50">
                     <div className="grid gap-6">
                       <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">Phone Number</label>
-                        <input type="text" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="input-glass" placeholder="Your contact number" />
+                        <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Comm Link (Phone)</label>
+                        <input type="text" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="input-neon" placeholder="123-456-7890" />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">Bio</label>
-                        <textarea value={editForm.bio} onChange={e => setEditForm({...editForm, bio: e.target.value})} className="input-glass min-h-[100px]" placeholder="Tell us about yourself" />
+                        <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Biography</label>
+                        <textarea value={editForm.bio} onChange={e => setEditForm({...editForm, bio: e.target.value})} className="input-neon min-h-[120px]" placeholder="Enter background logs..." />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">Skills (Comma separated)</label>
-                        <input type="text" value={editForm.skills} onChange={e => setEditForm({...editForm, skills: e.target.value})} className="input-glass" placeholder="React, Node.js, Design" />
+                        <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Skill Parameters</label>
+                        <input type="text" value={editForm.skills} onChange={e => setEditForm({...editForm, skills: e.target.value})} className="input-neon" placeholder="React, Node.js, AI" />
+                        <p className="text-[10px] text-cyan-500 mt-2 uppercase tracking-widest">Comma separated values</p>
                       </div>
                     </div>
-                    <div className="mt-6 flex gap-4">
-                      <button type="submit" className="btn-primary py-2 px-6">Save Changes</button>
-                      <button type="button" onClick={() => { setIsEditing(false); setEditForm({phone: profile.phone || '', bio: profile.bio || '', skills: profile.skills?.join(', ') || ''}); }} className="btn-secondary py-2 px-6 border-white/20">Cancel</button>
+                    <div className="mt-8 flex gap-4">
+                      <button type="submit" className="btn-neon-primary py-3 px-8 text-xs">Save Updates</button>
+                      <button type="button" onClick={() => { setIsEditing(false); setEditForm({phone: profile.phone || '', bio: profile.bio || '', skills: profile.skills?.join(', ') || ''}); }} className="btn-neon-secondary py-3 px-8 text-xs border-red-500/30 text-red-200 hover:border-red-500/60 hover:text-red-100 hover:bg-red-900/30">Cancel</button>
                     </div>
                   </form>
                 ) : (
-                  <div className="glass-card p-8 max-w-3xl">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="glass-card-neon p-10 max-w-4xl relative">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       <div>
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-1">Full Name</h4>
-                        <p className="text-lg font-medium bg-white/5 p-3 rounded-lg border border-white/5">{profile.name}</p>
+                        <h4 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-2">Subject Name</h4>
+                        <p className="text-xl font-medium text-cyan-50 uppercase tracking-wider bg-cyan-950/20 p-4 rounded-lg border border-cyan-500/20">{profile.name}</p>
                       </div>
                       <div>
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-1">Student ID</h4>
-                        <p className="text-lg font-medium bg-white/5 p-3 rounded-lg border border-white/5">{profile.studentId}</p>
+                        <h4 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-2">Identifier</h4>
+                        <p className="text-xl font-medium text-cyan-50 uppercase tracking-wider font-mono bg-cyan-950/20 p-4 rounded-lg border border-cyan-500/20">{profile.studentId}</p>
                       </div>
                       <div>
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-1">Email Address</h4>
-                        <p className="text-lg font-medium bg-white/5 p-3 rounded-lg border border-white/5">{profile.email}</p>
+                        <h4 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-2">Network Address</h4>
+                        <p className="text-md font-medium text-cyan-50 font-mono bg-cyan-950/20 p-4 rounded-lg border border-cyan-500/20">{profile.email}</p>
                       </div>
                       <div>
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-1">Department & Year</h4>
-                        <p className="text-lg font-medium bg-white/5 p-3 rounded-lg border border-white/5">{profile.department} - {profile.year}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-1">Phone Number</h4>
-                        <p className="text-lg font-medium bg-white/5 p-3 rounded-lg border border-white/5">{profile.phone || 'Not provided'}</p>
+                        <h4 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-2">Sector & Tier</h4>
+                        <p className="text-md font-medium text-cyan-50 uppercase tracking-wider bg-cyan-950/20 p-4 rounded-lg border border-cyan-500/20">{profile.department} - {profile.year}</p>
                       </div>
                       <div className="md:col-span-2">
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-1">Bio</h4>
-                        <p className="text-md bg-white/5 p-4 rounded-lg border border-white/5 min-h-[80px] text-gray-300 whitespace-pre-wrap">{profile.bio || 'Add a bio to tell others about yourself.'}</p>
+                        <h4 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-2">Biography Log</h4>
+                        <p className="text-sm bg-cyan-950/20 p-6 rounded-lg border border-cyan-500/20 min-h-[100px] text-cyan-100/80 whitespace-pre-wrap leading-relaxed">{profile.bio || 'NO LOG DATA.'}</p>
                       </div>
                       <div className="md:col-span-2">
-                        <h4 className="text-sm text-indigo-300 font-semibold mb-2">Skills</h4>
-                        <div className="flex flex-wrap gap-2">
+                        <h4 className="text-[10px] text-cyan-500 font-bold uppercase tracking-widest mb-3">Skill Matrix</h4>
+                        <div className="flex flex-wrap gap-3">
                           {profile.skills?.length > 0 ? (
                             profile.skills.map((skill, i) => (
-                              <span key={i} className="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-sm font-medium">
+                              <span key={i} className="px-4 py-1.5 bg-purple-900/30 text-purple-200 border border-purple-500/50 rounded-md text-xs font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.2)]">
                                 {skill}
                               </span>
                             ))
                           ) : (
-                            <p className="text-sm text-gray-500">No skills added yet.</p>
+                            <p className="text-xs text-cyan-500/50 uppercase tracking-widest">No parameters inputted.</p>
                           )}
                         </div>
                       </div>
@@ -302,43 +304,43 @@ const StudentDashboard = () => {
 
             {/* MY PROJECTS TAB */}
             {activeTab === 'my-projects' && (
-              <motion.div key="my-projects" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-3xl font-bold">My Projects</h3>
-                  <button onClick={() => setActiveTab('upload')} className="btn-primary py-2 text-sm flex gap-2 items-center">
-                    <UploadCloud size={16} /> Upload New
+              <motion.div key="my-projects" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200">Project Archive</h3>
+                  <button onClick={() => setActiveTab('upload')} className="btn-neon-primary py-2 px-6 text-xs gap-3">
+                    <UploadCloud size={16} /> INITIALIZE UPLOAD
                   </button>
                 </div>
                 
-                <div className="grid gap-6">
+                <div className="grid gap-8">
                   {projects.map(project => (
-                    <div key={project._id} className="glass-card p-6 border-l-4 border-indigo-500 relative overflow-hidden group">
-                      <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <FolderGit2 size={80} />
+                    <div key={project._id} className="glass-card-neon p-8 border-l-4 border-l-cyan-500 group">
+                      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-20 transition-all duration-500 transform group-hover:scale-110 group-hover:rotate-12">
+                        <FolderGit2 size={120} className="text-cyan-400" />
                       </div>
                       <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="text-2xl font-bold text-white pr-4">{project.title}</h4>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${project.status === 'Approved' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : project.status === 'Pending' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+                          <h4 className="text-2xl font-black text-white pr-4 uppercase tracking-wider group-hover:neon-text-glow transition-all">{project.title}</h4>
+                          <span className={`px-4 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest border ${project.status === 'Approved' ? 'bg-green-950/40 text-green-400 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : project.status === 'Pending' ? 'bg-yellow-950/40 text-yellow-400 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)]' : 'bg-red-950/40 text-red-400 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]'}`}>
                             {project.status}
                           </span>
                         </div>
-                        <p className="text-gray-300 text-md mb-6 max-w-3xl leading-relaxed">{project.description}</p>
+                        <p className="text-cyan-100/70 text-sm mb-8 max-w-3xl leading-relaxed">{project.description}</p>
                         
                         <div className="flex flex-wrap gap-4">
                           {project.githubLink && (
-                            <a href={project.githubLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg border border-white/10 transition-colors">
-                              <ExternalLink size={16} className="text-gray-400" /> GitHub Repository
+                            <a href={project.githubLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-wider bg-black/50 hover:bg-cyan-950/40 px-5 py-2.5 rounded-lg border border-cyan-500/30 hover:border-cyan-400 font-bold transition-all text-cyan-200">
+                              <ExternalLink size={16} /> Repository
                             </a>
                           )}
                           {project.demoLink && (
-                            <a href={project.demoLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm bg-purple-500/10 hover:bg-purple-500/20 text-purple-200 px-4 py-2 rounded-lg border border-purple-500/30 transition-colors">
-                              <Globe size={16} /> Live Demo
+                            <a href={project.demoLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-wider bg-purple-950/30 hover:bg-purple-900/50 text-purple-200 px-5 py-2.5 rounded-lg border border-purple-500/40 hover:border-purple-400 transition-all font-bold">
+                              <Globe size={16} /> Deployment
                             </a>
                           )}
                           {project.pdfLink && (
-                            <a href={project.pdfLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm bg-orange-500/10 hover:bg-orange-500/20 text-orange-200 px-4 py-2 rounded-lg border border-orange-500/30 transition-colors">
-                              <FileText size={16} /> View Assignment PDF
+                            <a href={project.pdfLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-wider bg-orange-950/30 hover:bg-orange-900/50 text-orange-200 px-5 py-2.5 rounded-lg border border-orange-500/40 hover:border-orange-400 transition-all font-bold">
+                              <FileText size={16} /> Data File
                             </a>
                           )}
                         </div>
@@ -346,88 +348,88 @@ const StudentDashboard = () => {
                     </div>
                   ))}
                   {projects.length === 0 && (
-                    <div className="text-center py-12 glass-card">
-                      <FolderGit2 size={48} className="mx-auto text-gray-500 mb-4" />
-                      <p className="text-xl text-gray-400">You haven't uploaded any projects yet.</p>
-                      <button onClick={() => setActiveTab('upload')} className="text-indigo-400 hover:text-white mt-2 underline">Upload your first project</button>
+                    <div className="text-center py-20 glass-card-neon border-dashed border-cyan-500/30">
+                      <FolderGit2 size={64} className="mx-auto text-cyan-500/30 mb-6" />
+                      <p className="text-xl text-cyan-300/50 font-black uppercase tracking-widest mb-4">Archive Empty</p>
+                      <button onClick={() => setActiveTab('upload')} className="text-cyan-400 hover:text-cyan-300 text-sm font-bold uppercase tracking-wider border-b border-transparent hover:border-cyan-400 transition-all">Commence Upload Protocol</button>
                     </div>
                   )}
                 </div>
               </motion.div>
             )}
 
-            {/* UPLOAD PROJECT TAB */}
+            {/* UPLOAD TAB */}
             {activeTab === 'upload' && (
-              <motion.div key="upload" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h3 className="text-3xl font-bold mb-6">Upload New Project</h3>
-                <form onSubmit={handleUploadProject} className="glass-card p-8 max-w-3xl border border-indigo-500/20">
-                  <div className="grid gap-6">
+              <motion.div key="upload" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
+                <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200 mb-8">Data Upload Module</h3>
+                <form onSubmit={handleUploadProject} className="glass-card-neon p-10 max-w-3xl border-cyan-400/30 bg-black/60">
+                  <div className="grid gap-8">
                     <div>
-                      <label className="block text-sm font-medium mb-1 text-gray-300">Project Title <span className="text-red-400">*</span></label>
-                      <input type="text" name="title" required className="input-glass text-lg" placeholder="Awesome Web Platform" />
+                      <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Project Designation <span className="text-red-400">*</span></label>
+                      <input type="text" name="title" required className="input-neon text-lg font-bold" placeholder="PROJECT NEXUS" />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium mb-1 text-gray-300">Project Description <span className="text-red-400">*</span></label>
-                      <textarea name="description" required className="input-glass min-h-[150px]" placeholder="Describe your project, technologies used, and your learning outcomes..." />
+                      <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Operational Description <span className="text-red-400">*</span></label>
+                      <textarea name="description" required className="input-neon min-h-[150px]" placeholder="Detail system architecture and parameters..." />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">GitHub Link</label>
-                        <input type="url" name="githubLink" className="input-glass" placeholder="https://github.com/..." />
+                        <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Repository URL</label>
+                        <input type="url" name="githubLink" className="input-neon font-mono text-sm" placeholder="https://github.com/..." />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1 text-gray-300">Live Demo Link</label>
-                        <input type="url" name="demoLink" className="input-glass" placeholder="https://..." />
+                        <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Deployment URL</label>
+                        <input type="url" name="demoLink" className="input-neon font-mono text-sm" placeholder="https://..." />
                       </div>
                     </div>
 
-                    <div className="bg-indigo-500/10 border border-indigo-500/20 p-6 rounded-xl">
-                      <label className="block text-sm font-medium mb-2 text-indigo-200 flex items-center gap-2">
-                        <FileText size={18} /> Upload Project PDF Requirement <span className="text-red-400">*</span>
+                    <div className="bg-cyan-950/20 border border-cyan-500/30 p-8 rounded-xl relative overflow-hidden group">
+                      <div className="absolute right-0 top-0 h-full w-2 bg-gradient-to-b from-cyan-400 to-transparent"></div>
+                      <label className="flex items-center gap-3 text-sm font-bold uppercase tracking-widest mb-3 text-cyan-300">
+                        <FileText size={20} /> Encrypt Documentation <span className="text-red-400">*</span>
                       </label>
-                      <p className="text-xs text-gray-400 mb-4">Please upload documentation, slides, or assignment requirements as a PDF file.</p>
-                      <input type="file" name="file" accept=".pdf,image/*" required className="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-500 file:text-white hover:file:bg-indigo-600 cursor-pointer" />
+                      <p className="text-xs text-cyan-100/50 mb-6 uppercase tracking-wider font-medium">Attach PDF presentation or schematics</p>
+                      <input type="file" name="file" accept=".pdf,image/*" required className="w-full text-xs font-mono text-cyan-200 file:cursor-pointer file:mr-6 file:py-3 file:px-6 file:rounded file:border file:border-cyan-500/50 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-cyan-950/60 file:text-cyan-300 hover:file:bg-cyan-900/80 hover:file:shadow-[0_0_15px_rgba(0,255,255,0.2)] transition-all" />
                     </div>
 
-                    <div className="mt-4 pt-6 border-t border-white/10 flex justify-end">
-                      <button type="submit" className="btn-primary py-3 px-8 text-lg font-bold shadow-indigo-500/50">Submit Project for Approval</button>
+                    <div className="mt-4 pt-8 border-t border-cyan-500/20 flex justify-end">
+                      <button type="submit" className="btn-neon-primary py-4 px-10 text-xs tracking-widest">TRANSMIT TO HQ</button>
                     </div>
                   </div>
                 </form>
               </motion.div>
             )}
 
-            {/* RESOURCES TAB */}
+            {/* RESOURCES AND NOTICES FOLLOW EXACT SAME LOGIC ... */}
             {activeTab === 'resources' && (
-              <motion.div key="resources" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h3 className="text-3xl font-bold mb-6">Educational Resources</h3>
+              <motion.div key="resources" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
+                <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-purple-300 mb-8">Resource Network</h3>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {resources.map(res => (
-                    <div key={res._id} className="glass-card p-6 flex flex-col justify-between border-t-2 border-t-purple-500 relative overflow-hidden group">
+                    <div key={res._id} className="glass-card-neon p-8 flex flex-col justify-between border-t-2 border-t-purple-500 relative group">
                       <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <FileText size={120} />
+                        <FileText size={180} />
                       </div>
-                      <div className="relative z-10 mb-4">
-                        <h4 className="font-bold text-xl mb-1 text-white">{res.title}</h4>
-                        <p className="text-xs text-purple-300 font-medium mb-3">Uploaded by Admin ({res.uploadedBy?.username})</p>
-                        <p className="text-sm text-gray-300">{res.description}</p>
+                      <div className="relative z-10 mb-6">
+                        <h4 className="font-black text-xl mb-2 text-white uppercase tracking-wider">{res.title}</h4>
+                        <p className="text-[10px] text-purple-400 font-bold uppercase tracking-widest mb-4">Origin: {res.uploadedBy?.username}</p>
+                        <p className="text-sm text-cyan-100/70 leading-relaxed">{res.description}</p>
                       </div>
-                      <a href={res.fileLink} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-2 text-sm bg-purple-500/20 hover:bg-purple-500/40 text-purple-200 px-4 py-2 rounded-lg transition-colors border border-purple-500/30 relative z-10">
-                        <ExternalLink size={16} /> Open Resource
+                      <a href={res.fileLink} target="_blank" rel="noreferrer" className="inline-flex w-fit items-center gap-3 text-xs font-bold uppercase tracking-widest bg-purple-900/30 hover:bg-purple-900/60 text-purple-200 px-5 py-3 rounded border border-purple-500/40 relative z-10 hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all">
+                        <ExternalLink size={16} /> Intercept File
                       </a>
                     </div>
                   ))}
-                  {resources.length === 0 && <p className="text-gray-400 col-span-full">No resources uploaded by teachers yet.</p>}
+                  {resources.length === 0 && <p className="text-cyan-500/50 font-bold uppercase tracking-widest col-span-full">No active resources within grid.</p>}
                 </div>
               </motion.div>
             )}
-
-            {/* NOTICES TAB */}
+            
             {activeTab === 'notices' && (
-              <motion.div key="notices" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-                <h3 className="text-3xl font-bold mb-6">Platform Notices</h3>
+              <motion.div key="notices" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
+                <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-orange-300 mb-8">Command Notices</h3>
                 <div className="max-w-4xl space-y-6">
                   {notices.map((notice, idx) => (
                     <motion.div 
@@ -435,22 +437,21 @@ const StudentDashboard = () => {
                       initial={{ opacity: 0, x: -20 }} 
                       animate={{ opacity: 1, x: 0 }} 
                       transition={{ delay: idx * 0.1 }}
-                      className="glass-card p-6 border-l-4 border-l-orange-500 relative"
+                      className="glass-card-neon p-8 border-l-4 border-l-orange-500"
                     >
                       <div className="flex justify-between items-start mb-4">
-                        <h4 className="text-xl font-bold text-white">{notice.title}</h4>
-                        <span className="text-xs font-mono text-orange-300 bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">
+                        <h4 className="text-xl font-black text-white uppercase tracking-widest">{notice.title}</h4>
+                        <span className="text-[10px] font-mono font-bold text-orange-400 bg-orange-950/40 px-3 py-1.5 rounded border border-orange-500/30">
                           {new Date(notice.createdAt).toLocaleDateString()}
                         </span>
                       </div>
-                      <p className="text-md text-gray-300 whitespace-pre-wrap leading-relaxed">{notice.message}</p>
+                      <p className="text-sm text-cyan-100/80 whitespace-pre-wrap leading-relaxed">{notice.message}</p>
                     </motion.div>
                   ))}
-                  {notices.length === 0 && <p className="text-gray-400">No notices posted.</p>}
+                  {notices.length === 0 && <p className="text-cyan-500/50 font-bold uppercase tracking-widest">No broadcasts intercepted.</p>}
                 </div>
               </motion.div>
             )}
-
           </AnimatePresence>
         </div>
       </div>
