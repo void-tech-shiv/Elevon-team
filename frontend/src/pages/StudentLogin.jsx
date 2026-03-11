@@ -44,7 +44,17 @@ const StudentLogin = () => {
       login(res.data.token, res.data.student, 'student');
       navigate('/student/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      console.error('Login Request Failed:');
+      console.error('Error Name:', err.name);
+      console.error('Error Message:', err.message);
+      if (err.response) {
+        console.error('Response Status:', err.response.status);
+        console.error('Response Data:', err.response.data);
+      } else if (err.request) {
+        console.error('No response received from server. Request details:', err.request);
+      }
+      
+      setError(err.response?.data?.message || err.message || 'Login failed. Please check your credentials and network connection.');
       setExpectedCaptcha(generateCaptcha());
       setCaptcha('');
     } finally {

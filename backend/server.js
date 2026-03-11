@@ -15,9 +15,17 @@ app.use(cors({
 app.use(express.json());
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/elevon')
-  .then(() => console.log('MongoDB Connected Successfully'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/elevon', {
+  serverSelectionTimeoutMS: 5000, 
+  socketTimeoutMS: 45000,
+}).then(() => console.log('MongoDB Connected Successfully'))
+  .catch(err => {
+    console.error('MongoDB Initial Connection Error:');
+    console.error(err.message);
+    if (!process.env.MONGO_URI && process.env.NODE_ENV === 'production') {
+       console.error('CRITICAL: MONGO_URI missing in production Vercel environment.');
+    }
+  });
 
 // Routes Configuration
 app.use('/api/auth', require('./routes/auth'));

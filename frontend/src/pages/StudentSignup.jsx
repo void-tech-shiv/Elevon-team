@@ -68,7 +68,13 @@ const StudentSignup = () => {
       setSuccess(true);
       setTimeout(() => navigate('/student/login'), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed.');
+      console.error('Signup Request Failed:');
+      console.error('Error Message:', err.message);
+      if (err.response) {
+        console.error('Response Data:', err.response.data);
+      }
+      
+      setError(err.response?.data?.message || err.message || 'Signup failed due to a network or server error.');
       setExpectedCaptcha(generateCaptcha());
       setCaptcha('');
     } finally {

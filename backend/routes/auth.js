@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Student = require('../models/Student');
@@ -9,6 +10,10 @@ const JWT_SECRET = process.env.JWT_SECRET || 'elevon_secret_key_123';
 
 // Student Signup
 router.post('/student/signup', async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ message: 'Service Unavailable: Database connection failed. Please ensure MONGO_URI is set securely.' });
+  }
+  
   try {
     const { name, studentId, email, department, year, password } = req.body;
     
@@ -42,6 +47,10 @@ router.post('/student/signup', async (req, res) => {
 
 // Student Login
 router.post('/student/login', async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ message: 'Service Unavailable: Database connection failed. Please ensure MONGO_URI is set securely.' });
+  }
+
   try {
     const { identifier, password } = req.body; // identifier can be email or studentId
 
@@ -90,6 +99,10 @@ router.post('/student/login', async (req, res) => {
 
 // Admin Login
 router.post('/admin/login', async (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ message: 'Service Unavailable: Database connection failed. Please ensure MONGO_URI is set securely.' });
+  }
+
   try {
     const { username, password } = req.body;
 
