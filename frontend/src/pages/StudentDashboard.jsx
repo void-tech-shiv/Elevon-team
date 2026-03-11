@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { 
-  LayoutDashboard, User, FolderGit2, UploadCloud, 
+import {
+  LayoutDashboard, User, FolderGit2, UploadCloud,
   FileText, Bell, LogOut, CheckCircle, ExternalLink, Globe
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -34,7 +34,7 @@ const StudentDashboard = () => {
       setProjects(projRes.data);
       setResources(resRes.data);
       setNotices(notRes.data);
-      
+
       setEditForm({
         phone: profRes.data.phone || '',
         bio: profRes.data.bio || '',
@@ -87,7 +87,7 @@ const StudentDashboard = () => {
       const uploadRes = await axios.post(`${API_BASE_URL}/api/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      
+
       const pdfLink = uploadRes.data.url;
 
       await axios.post(`${API_BASE_URL}/api/projects`, {
@@ -120,7 +120,7 @@ const StudentDashboard = () => {
   return (
     <div className="relative min-h-screen flex bg-gray-950 overflow-hidden text-cyan-50">
       <div className="cyber-grid"></div>
-      
+
       {/* Background Glow */}
       <div className="absolute top-[0%] left-[50%] w-[800px] h-[800px] bg-cyan-900/10 rounded-full blur-[150px] pointer-events-none -translate-x-1/2 mix-blend-screen"></div>
 
@@ -136,11 +136,10 @@ const StudentDashboard = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 uppercase tracking-wider text-xs font-bold ${
-                  activeTab === tab.id 
-                  ? 'bg-cyan-950/60 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.15)] translate-x-1' 
-                  : 'text-cyan-100/40 hover:text-cyan-200 hover:bg-cyan-900/20 hover:border-cyan-500/20 border border-transparent'
-                }`}
+                className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 uppercase tracking-wider text-xs font-bold ${activeTab === tab.id
+                    ? 'bg-cyan-950/60 text-cyan-300 border border-cyan-500/50 shadow-[0_0_15px_rgba(0,255,255,0.15)] translate-x-1'
+                    : 'text-cyan-100/40 hover:text-cyan-200 hover:bg-cyan-900/20 hover:border-cyan-500/20 border border-transparent'
+                  }`}
               >
                 <tab.icon size={18} className={activeTab === tab.id ? "text-cyan-400" : "opacity-70"} />
                 <span>{tab.label}</span>
@@ -153,7 +152,7 @@ const StudentDashboard = () => {
           </nav>
         </div>
         <div className="p-4 border-t border-cyan-500/20">
-          <button 
+          <button
             onClick={handleLogout}
             className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-red-400/60 hover:text-red-400 border border-transparent hover:bg-red-950/40 hover:border-red-500/40 transition-all font-bold text-xs uppercase tracking-wider"
           >
@@ -166,9 +165,9 @@ const StudentDashboard = () => {
       {/* Main Content Area */}
       <div className="flex-1 p-4 pl-0 overflow-y-auto w-full max-w-full z-10">
         <div className="glass-panel-neon h-full p-8 relative overflow-x-hidden">
-          
+
           <AnimatePresence mode="wait">
-            
+
             {/* DASHBOARD OVERVIEW */}
             {activeTab === 'dashboard' && (
               <motion.div key="dashboard" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="space-y-8">
@@ -176,7 +175,7 @@ const StudentDashboard = () => {
                   <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200">System Overview</h3>
                   <p className="text-cyan-200/60 mt-1 uppercase tracking-widest text-sm">Welcome back, {profile.name}</p>
                 </header>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="glass-card-neon p-6 border-l-4 border-l-cyan-400 group">
                     <p className="text-cyan-200/50 text-xs font-bold uppercase tracking-wider mb-2">My Projects</p>
@@ -208,7 +207,7 @@ const StudentDashboard = () => {
                       {notices.length === 0 && <p className="text-xs text-cyan-500/50 uppercase tracking-widest text-center py-4">No recent transmissions</p>}
                     </div>
                   </div>
-                  
+
                   <div className="glass-card-neon p-8">
                     <h4 className="text-sm font-black uppercase tracking-widest mb-6 border-b border-cyan-500/20 pb-4 text-cyan-300">Project Activity</h4>
                     <div className="space-y-4">
@@ -231,9 +230,9 @@ const StudentDashboard = () => {
             {activeTab === 'profile' && (
               <motion.div key="profile" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
                 <div className="flex justify-between items-end mb-8">
-                  <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200">Personnel Dossier</h3>
+                  <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200">Personal profile</h3>
                   {!isEditing && (
-                    <button onClick={() => setIsEditing(true)} className="btn-neon-secondary text-xs py-2 px-6">Edit Dossier</button>
+                    <button onClick={() => setIsEditing(true)} className="btn-neon-secondary text-xs py-2 px-6">Edit Profile</button>
                   )}
                 </div>
 
@@ -242,21 +241,21 @@ const StudentDashboard = () => {
                     <div className="grid gap-6">
                       <div>
                         <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Comm Link (Phone)</label>
-                        <input type="text" value={editForm.phone} onChange={e => setEditForm({...editForm, phone: e.target.value})} className="input-neon" placeholder="123-456-7890" />
+                        <input type="text" value={editForm.phone} onChange={e => setEditForm({ ...editForm, phone: e.target.value })} className="input-neon" placeholder="123-456-7890" />
                       </div>
                       <div>
                         <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Biography</label>
-                        <textarea value={editForm.bio} onChange={e => setEditForm({...editForm, bio: e.target.value})} className="input-neon min-h-[120px]" placeholder="Enter background logs..." />
+                        <textarea value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })} className="input-neon min-h-[120px]" placeholder="Enter background logs..." />
                       </div>
                       <div>
                         <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Skill Parameters</label>
-                        <input type="text" value={editForm.skills} onChange={e => setEditForm({...editForm, skills: e.target.value})} className="input-neon" placeholder="React, Node.js, AI" />
+                        <input type="text" value={editForm.skills} onChange={e => setEditForm({ ...editForm, skills: e.target.value })} className="input-neon" placeholder="React, Node.js, AI" />
                         <p className="text-[10px] text-cyan-500 mt-2 uppercase tracking-widest">Comma separated values</p>
                       </div>
                     </div>
                     <div className="mt-8 flex gap-4">
                       <button type="submit" className="btn-neon-primary py-3 px-8 text-xs">Save Updates</button>
-                      <button type="button" onClick={() => { setIsEditing(false); setEditForm({phone: profile.phone || '', bio: profile.bio || '', skills: profile.skills?.join(', ') || ''}); }} className="btn-neon-secondary py-3 px-8 text-xs border-red-500/30 text-red-200 hover:border-red-500/60 hover:text-red-100 hover:bg-red-900/30">Cancel</button>
+                      <button type="button" onClick={() => { setIsEditing(false); setEditForm({ phone: profile.phone || '', bio: profile.bio || '', skills: profile.skills?.join(', ') || '' }); }} className="btn-neon-secondary py-3 px-8 text-xs border-red-500/30 text-red-200 hover:border-red-500/60 hover:text-red-100 hover:bg-red-900/30">Cancel</button>
                     </div>
                   </form>
                 ) : (
@@ -311,7 +310,7 @@ const StudentDashboard = () => {
                     <UploadCloud size={16} /> INITIALIZE UPLOAD
                   </button>
                 </div>
-                
+
                 <div className="grid gap-8">
                   {projects.map(project => (
                     <div key={project._id} className="glass-card-neon p-8 border-l-4 border-l-cyan-500 group">
@@ -326,7 +325,7 @@ const StudentDashboard = () => {
                           </span>
                         </div>
                         <p className="text-cyan-100/70 text-sm mb-8 max-w-3xl leading-relaxed">{project.description}</p>
-                        
+
                         <div className="flex flex-wrap gap-4">
                           {project.githubLink && (
                             <a href={project.githubLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-xs uppercase tracking-wider bg-black/50 hover:bg-cyan-950/40 px-5 py-2.5 rounded-lg border border-cyan-500/30 hover:border-cyan-400 font-bold transition-all text-cyan-200">
@@ -368,7 +367,7 @@ const StudentDashboard = () => {
                       <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Project Designation <span className="text-red-400">*</span></label>
                       <input type="text" name="title" required className="input-neon text-lg font-bold" placeholder="PROJECT NEXUS" />
                     </div>
-                    
+
                     <div>
                       <label className="block text-xs font-bold mb-2 text-cyan-200 uppercase tracking-wider">Operational Description <span className="text-red-400">*</span></label>
                       <textarea name="description" required className="input-neon min-h-[150px]" placeholder="Detail system architecture and parameters..." />
@@ -426,16 +425,16 @@ const StudentDashboard = () => {
                 </div>
               </motion.div>
             )}
-            
+
             {activeTab === 'notices' && (
               <motion.div key="notices" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
                 <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-orange-300 mb-8">Command Notices</h3>
                 <div className="max-w-4xl space-y-6">
                   {notices.map((notice, idx) => (
-                    <motion.div 
-                      key={notice._id} 
-                      initial={{ opacity: 0, x: -20 }} 
-                      animate={{ opacity: 1, x: 0 }} 
+                    <motion.div
+                      key={notice._id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.1 }}
                       className="glass-card-neon p-8 border-l-4 border-l-orange-500"
                     >
