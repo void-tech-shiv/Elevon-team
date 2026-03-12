@@ -63,7 +63,10 @@ const AdminDashboard = () => {
       if(method === "delete") await axios.delete(endpoint);
       if(method === "put") await axios.put(endpoint, data);
       fetchData();
-    } catch { alert('Operation failed'); }
+    } catch (err) { 
+      const errMsg = err.response?.data?.message || err.message || 'Operation failed';
+      alert(errMsg); 
+    }
   };
 
   const handleCreateNotice = async (e) => {
@@ -185,10 +188,10 @@ const AdminDashboard = () => {
                       <p className="text-xs text-pink-200/50 uppercase tracking-widest font-mono mt-1">{student.email} • {student.department}</p>
                     </div>
                     <div className="flex gap-3 mt-4 md:mt-0">
-                      <button onClick={() => stdAction(`${API_BASE_URL}/api/admin/students/${student._id}/status`, 'put', {status: 'Active'})} className="bg-green-950/40 border border-green-500/40 text-green-400 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-green-900/60 shadow-[0_0_10px_rgba(34,197,94,0.1)] transition-all">
+                      <button onClick={() => stdAction(`${API_BASE_URL}/api/admin/students/${student._id}/status`, 'put', {status: 'active'})} className="bg-green-950/40 border border-green-500/40 text-green-400 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-green-900/60 shadow-[0_0_10px_rgba(34,197,94,0.1)] transition-all">
                         <CheckCircle size={16} /> Authorize
                       </button>
-                      <button onClick={() => stdAction(`${API_BASE_URL}/api/admin/students/${student._id}/status`, 'put', {status: 'Rejected'})} className="bg-red-950/40 border border-red-500/40 text-red-400 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-red-900/60 shadow-[0_0_10px_rgba(239,68,68,0.1)] transition-all">
+                      <button onClick={() => stdAction(`${API_BASE_URL}/api/admin/students/${student._id}/status`, 'put', {status: 'rejected'})} className="bg-red-950/40 border border-red-500/40 text-red-400 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-red-900/60 shadow-[0_0_10px_rgba(239,68,68,0.1)] transition-all">
                         <XCircle size={16} /> Terminate
                       </button>
                     </div>

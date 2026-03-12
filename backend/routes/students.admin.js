@@ -17,13 +17,15 @@ router.get('/', verifyAdmin, async (req, res) => {
 // Update student status (Approve / Reject)
 router.put('/:id/status', verifyAdmin, async (req, res) => {
   try {
+    const studentId = req.params.id;
     const { status } = req.body;
+    
     if (!['pending', 'active', 'rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
     const student = await Student.findByIdAndUpdate(
-      req.params.id,
+      studentId,
       { status },
       { new: true }
     ).select('-password');
@@ -32,8 +34,9 @@ router.put('/:id/status', verifyAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Student not found' });
     }
 
-    res.json(student);
+    res.json({ success: true, message: 'Student approved/updated successfully', student });
   } catch (error) {
+    console.error('APPROVAL_API_ERROR:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
