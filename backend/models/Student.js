@@ -11,7 +11,7 @@ const studentSchema = new mongoose.Schema({
   bio: { type: String, default: '' },
   skills: { type: [String], default: [] },
   profileImage: { type: String, default: '' },
-  status: { type: String, enum: ['Pending', 'Active', 'Rejected'], default: 'Pending' },
+  status: { type: String, enum: ['pending', 'active', 'rejected'], default: 'pending' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Student', studentSchema);
