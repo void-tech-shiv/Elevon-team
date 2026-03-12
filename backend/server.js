@@ -8,11 +8,26 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: '*', // Allow all origins for now to fix connection issues
+  origin: ['https://live-web-ek36.onrender.com', 'http://localhost:5173'],
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
+
+// API Request Logging
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (res.statusCode >= 200 && res.statusCode < 400) {
+      console.log(`API_SUCCESS: ${req.method} ${req.originalUrl} - Status: ${res.statusCode} - ${duration}ms`);
+    } else {
+      console.log(`API_FAILURE: ${req.method} ${req.originalUrl} - Status: ${res.statusCode} - ${duration}ms`);
+    }
+  });
+  next();
+});
 
 // Database Connection
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/elevon', {
@@ -47,10 +62,18 @@ app.get('/', (req, res) => {
   res.send('Elevon API is running');
 });
 
-if (process.env.NODE_ENV !== 'production' || process.env.RENDER) {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port ${PORT}`);
+// Global Error Handling
+app.use((err, req, res, next) => {
+  console.error('Production Error:', err.message);
+  res.status(500).json({
+    success: false,
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'production' ? 'Server Error' : err.message
   });
-}
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server is listening on port ${PORT}`);
+});
 
 module.exports = app;
