@@ -18,6 +18,7 @@ router.get('/showcase', async (req, res) => {
 // Upload new project (Student only)
 router.post('/', verifyStudent, async (req, res) => {
   try {
+    const { title, description, githubLink, demoLink, pdfLink } = req.body;
     console.log("UPLOAD_RECEIVED:", { title, studentId: req.user.id });
     const project = new Project({
       studentId: req.user.id,
