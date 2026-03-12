@@ -6,13 +6,24 @@ import {
   LayoutDashboard, Users, UserCheck, FolderGit2, 
   FileText, Bell, LogOut, CheckCircle, XCircle, Trash2 
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import API_BASE_URL from '../api/config';
+import AdminSidebar from '../components/AdminSidebar';
 
 const AdminDashboard = () => {
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('overview');
   const { logout, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.includes('requests')) setActiveTab('requests');
+    else if (path.includes('students')) setActiveTab('students');
+    else if (path.includes('resources')) setActiveTab('resources');
+    else if (path.includes('notices')) setActiveTab('notices');
+    else setActiveTab('overview');
+  }, [location.pathname]);
 
   const [students, setStudents] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -46,11 +57,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
 
   const stdAction = async (endpoint, method = "delete", data = {}) => {
     try {
@@ -95,49 +101,12 @@ const AdminDashboard = () => {
   const pendingStudents = students.filter(s => s.status === 'pending');
   const pendingProjects = projects.filter(p => p.status === 'pending');
 
-  const tabs = [
-    { id: 'overview', label: 'Command Center', icon: LayoutDashboard },
-    { id: 'requests', label: `Pending Access (${pendingStudents.length})`, icon: UserCheck },
-    { id: 'students', label: 'User Directory', icon: Users },
-    { id: 'projects', label: 'Project Vault', icon: FolderGit2 },
-    { id: 'resources', label: 'Data Bank', icon: FileText },
-    { id: 'notices', label: 'Broadcasts', icon: Bell },
-  ];
-
   return (
     <div className="relative min-h-screen flex bg-gray-950 overflow-hidden text-red-50">
       <div className="cyber-grid" style={{ backgroundImage: 'linear-gradient(to right, rgba(236, 72, 153, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(236, 72, 153, 0.03) 1px, transparent 1px)' }}></div>
       <div className="absolute top-[20%] left-[20%] w-[1000px] h-[1000px] bg-red-900/10 rounded-full blur-[180px] pointer-events-none -translate-x-1/2 mix-blend-screen"></div>
 
-      <div className="w-64 sidebar-neon m-4 flex flex-col justify-between rounded-2xl shrink-0 z-10 border-r-pink-500/30 bg-black/80 shadow-[4px_0_24px_rgba(236,72,153,0.1)]">
-        <div>
-          <div className="p-6 border-b border-pink-500/20">
-            <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-red-500 tracking-widest uppercase drop-shadow-[0_0_10px_rgba(236,72,153,0.6)]">ADMIN CORE</h2>
-            <p className="text-pink-200/50 text-[10px] mt-2 uppercase tracking-widest font-mono">SYS-ADMIN: {user?.username}</p>
-          </div>
-          <nav className="p-4 space-y-2">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-300 uppercase tracking-wider text-xs font-bold ${
-                  activeTab === tab.id 
-                  ? 'bg-pink-950/50 text-pink-300 border border-pink-500/50 shadow-[0_0_15px_rgba(236,72,153,0.2)] translate-x-1' 
-                  : 'text-pink-100/40 hover:text-pink-200 hover:bg-pink-900/20 hover:border-pink-500/20 border border-transparent'
-                }`}
-              >
-                <tab.icon size={18} className={activeTab === tab.id ? "text-pink-400" : "opacity-70"} />
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
-        <div className="p-4 border-t border-pink-500/20">
-          <button onClick={handleLogout} className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-red-500/80 hover:text-red-400 border border-transparent hover:bg-red-950/40 hover:border-red-500/40 transition-all font-bold text-xs uppercase tracking-wider">
-            <LogOut size={18} /> TERM SESSION
-          </button>
-        </div>
-      </div>
+      <AdminSidebar pendingStudents={pendingStudents.length} pendingProjects={pendingProjects.length} />
 
       <div className="flex-1 p-4 pl-0 overflow-y-auto w-full max-w-full z-10">
         <div className="glass-panel-neon h-full p-8 border-pink-500/20 relative overflow-x-hidden">
@@ -205,6 +174,7 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
+            {/* Remaining tabs are local for simplicity in this dashboard view */}
             {activeTab === 'requests' && (
               <motion.div key="requests" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
                  <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-red-100 to-pink-400 mb-8">Access Clearances</h3>
@@ -224,58 +194,6 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 ))}
-              </motion.div>
-            )}
-
-            {activeTab === 'projects' && (
-              <motion.div key="projects" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
-                <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-pink-400 mb-8">Project Vault</h3>
-                <div className="overflow-x-auto rounded-xl border border-pink-500/20 bg-black/50 shadow-[0_0_20px_rgba(236,72,153,0.05)]">
-                  <table className="table-neon w-full">
-                    <thead>
-                      <tr>
-                        {["Project", "Owner", "Status", "Action"].map(h => <th key={h} className="border-cyan-500/30 bg-pink-950/20 text-pink-300">{h}</th>)}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {projects.map(p => (
-                        <tr key={p._id}>
-                          <td>
-                            <div className="flex flex-col">
-                              <span className="font-bold text-white uppercase tracking-wider">{p.title}</span>
-                              <span className="text-[10px] text-pink-200/50 line-clamp-1 max-w-[200px]">{p.description}</span>
-                            </div>
-                          </td>
-                          <td className="font-mono text-pink-200/60 text-xs">
-                            {p.studentId?.name} <br/> {p.studentId?.studentId}
-                          </td>
-                          <td>
-                            <span className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border rounded ${p.status === 'approved' ? 'bg-green-950/50 text-green-400 border-green-500/50' : p.status === 'pending' ? 'bg-yellow-950/50 text-yellow-400 border-yellow-500/50' : 'bg-red-950/50 text-red-400 border-red-500/50'}`}>{p.status}</span>
-                          </td>
-                          <td className="flex gap-2 items-center p-4">
-                            <select 
-                              value={p.status} 
-                              onChange={e => stdAction(`${API_BASE_URL}/api/admin/projects/${p._id}/status`, 'put', {status: e.target.value})} 
-                              className="bg-pink-950/40 border border-pink-500/30 text-pink-200 text-xs py-1.5 px-3 rounded uppercase font-bold tracking-wider outline-none"
-                            >
-                              <option value="pending">Pending</option>
-                              <option value="approved">Approved</option>
-                              <option value="rejected">Rejected</option>
-                            </select>
-                            <button onClick={() => window.confirm('Delete project?') && stdAction(`${API_BASE_URL}/api/admin/projects/${p._id}`, 'delete')} className="text-red-500 hover:text-red-400 bg-red-950/30 p-2 rounded hover:bg-red-900/60 transition-colors">
-                              <Trash2 size={16} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  {projects.length === 0 && (
-                    <div className="p-20 text-center uppercase tracking-widest text-pink-500/40 font-mono text-sm">
-                      No projects registered in the vault.
-                    </div>
-                  )}
-                </div>
               </motion.div>
             )}
 
