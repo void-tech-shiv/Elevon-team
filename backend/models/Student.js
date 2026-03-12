@@ -11,7 +11,20 @@ const studentSchema = new mongoose.Schema({
   bio: { type: String, default: '' },
   skills: { type: [String], default: [] },
   profileImage: { type: String, default: '' },
-  status: { type: String, enum: ['pending', 'active', 'rejected'], default: 'pending' },
+  status: { 
+    type: String, 
+    enum: {
+      values: ['pending', 'active', 'rejected'],
+      message: '{VALUE} is not a valid status'
+    },
+    default: 'pending' 
+  },
 }, { timestamps: true });
+
+studentSchema.pre('validate', function() {
+  if (this.status) {
+    this.status = this.status.toLowerCase();
+  }
+});
 
 module.exports = mongoose.model('Student', studentSchema);
