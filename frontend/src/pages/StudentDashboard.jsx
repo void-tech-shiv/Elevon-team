@@ -99,8 +99,8 @@ const StudentDashboard = () => {
       fetchData();
       setActiveTab('my-projects');
     } catch (error) {
-      console.error(error);
-      alert('Failed to upload project');
+      console.error('UPLOAD_FAIL_REASON:', error);
+      alert(`Failed to upload project: ${error.response?.data?.message || error.message || 'Unknown error'}`);
     }
   };
 

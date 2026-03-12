@@ -23,9 +23,10 @@ router.post('/', verifyToken, upload.single('file'), (req, res) => {
     { resource_type: 'auto', folder: 'elevon_uploads' },
     (error, result) => {
       if (error) {
-        console.error('Cloudinary Upload Error:', error);
-        return res.status(500).json({ message: 'Upload failed' });
+        console.error("FILE_UPLOAD_FAIL:", error);
+        return res.status(500).json({ message: 'Upload failed', error: error.message || 'Cloudinary error' });
       }
+      console.log("FILE_UPLOAD_SUCCESS:", result.secure_url);
       res.json({ url: result.secure_url });
     }
   );
