@@ -1,0 +1,12 @@
+Error message: next is not a function
+Stack: TypeError: next is not a function
+    at model.<anonymous> (D:\ELEVON\elevon\backend\models\Student.js:28:3)
+    at Kareem.execPre (D:\ELEVON\elevon\backend\node_modules\kareem\index.js:68:39)
+    at model._execDocumentPreHooks (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\document.js:2988:29)
+    at model.$__validate (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\document.js:3006:28)
+    at model.validate (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\document.js:2702:16)
+    at model.validateBeforeSavePreSave (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\plugins\validateBeforeSave.js:39:16)
+    at Kareem.execPre (D:\ELEVON\elevon\backend\node_modules\kareem\index.js:68:39)
+    at model._execDocumentPreHooks (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\document.js:2988:29)
+    at model.$__save (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\model.js:376:16)
+    at model.save (D:\ELEVON\elevon\backend\node_modules\mongoose\lib\model.js:642:16)

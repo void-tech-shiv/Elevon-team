@@ -34,7 +34,7 @@ router.post('/student/signup', async (req, res) => {
       department,
       year,
       password: hashedPassword,
-      status: 'Pending'
+      status: 'pending'
     });
 
     await student.save();
@@ -64,10 +64,10 @@ router.post('/student/login', async (req, res) => {
     }
 
     // Check status
-    if (student.status === 'Pending') {
+    if (student.status === 'pending') {
       return res.status(403).json({ message: 'Your account is waiting for teacher approval.' });
     }
-    if (student.status === 'Rejected') {
+    if (student.status === 'rejected') {
       return res.status(403).json({ message: 'Your account registration was rejected.' });
     }
 

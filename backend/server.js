@@ -64,7 +64,12 @@ app.get('/', (req, res) => {
 
 // Global Error Handling
 app.use((err, req, res, next) => {
-  console.error('Production Error:', err.message);
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Production Error [Stack trace]:', err.stack || err.message);
+  } else {
+    console.error('Development Error:', err.stack || err.message);
+  }
+  
   res.status(500).json({
     success: false,
     message: 'Internal Server Error',
