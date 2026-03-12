@@ -31,6 +31,7 @@ router.post('/', verifyStudent, async (req, res) => {
 
     await project.save();
     console.log("DB_INSERT_SUCCESS:", project._id);
+    console.log("PROJECT_STATUS_PENDING:", project._id);
     res.status(201).json({ message: 'Project uploaded successfully. Waiting for admin approval.', project });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
