@@ -43,8 +43,9 @@ const AdminProjects = () => {
     try {
       await axios.put(`${API_BASE_URL}/api/admin/projects/${id}/${action}`);
       fetchData();
-    } catch { 
-      alert('Operation failed'); 
+    } catch (err) { 
+      const errMsg = err.response?.data?.message || err.message || 'Operation failed';
+      alert(errMsg); 
     }
   };
 
