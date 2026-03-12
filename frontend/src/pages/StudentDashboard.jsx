@@ -115,7 +115,7 @@ const StudentDashboard = () => {
 
   if (!profile) return <div className="min-h-screen flex items-center justify-center bg-gray-950 text-cyan-400 font-mono tracking-widest uppercase">INITIALIZING SYSTEM...</div>;
 
-  const approvedProjects = projects.filter(p => p.status === 'Approved');
+  const approvedProjects = projects.filter(p => p.status === 'approved');
 
   return (
     <div className="relative min-h-screen flex bg-gray-950 overflow-hidden text-cyan-50">
@@ -214,7 +214,7 @@ const StudentDashboard = () => {
                       {projects.slice(0, 3).map(p => (
                         <div key={p._id} className="flex justify-between items-center bg-black/30 p-4 rounded-xl border border-cyan-500/20 hover:border-cyan-500/50 transition-colors">
                           <p className="font-bold text-xs uppercase tracking-wider text-cyan-50 truncate pr-4">{p.title}</p>
-                          <span className={`text-[10px] px-3 py-1 rounded-sm uppercase tracking-widest shrink-0 font-bold border ${p.status === 'Approved' ? 'bg-green-950/40 text-green-400 border-green-500/50' : p.status === 'Pending' ? 'bg-yellow-950/40 text-yellow-400 border-yellow-500/50' : 'bg-red-950/40 text-red-400 border-red-500/50'}`}>
+                          <span className={`text-[10px] px-3 py-1 rounded-sm uppercase tracking-widest shrink-0 font-bold border ${p.status === 'approved' ? 'bg-green-950/40 text-green-400 border-green-500/50' : p.status === 'pending' ? 'bg-yellow-950/40 text-yellow-400 border-yellow-500/50' : 'bg-red-950/40 text-red-400 border-red-500/50'}`}>
                             {p.status}
                           </span>
                         </div>
@@ -320,7 +320,7 @@ const StudentDashboard = () => {
                       <div className="relative z-10">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                           <h4 className="text-2xl font-black text-white pr-4 uppercase tracking-wider group-hover:neon-text-glow transition-all">{project.title}</h4>
-                          <span className={`px-4 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest border ${project.status === 'Approved' ? 'bg-green-950/40 text-green-400 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : project.status === 'Pending' ? 'bg-yellow-950/40 text-yellow-400 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)]' : 'bg-red-950/40 text-red-400 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]'}`}>
+                          <span className={`px-4 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest border ${project.status === 'approved' ? 'bg-green-950/40 text-green-400 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : project.status === 'pending' ? 'bg-yellow-950/40 text-yellow-400 border-yellow-500/50 shadow-[0_0_10px_rgba(234,179,8,0.2)]' : 'bg-red-950/40 text-red-400 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]'}`}>
                             {project.status}
                           </span>
                         </div>

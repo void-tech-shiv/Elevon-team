@@ -18,7 +18,7 @@ router.get('/', verifyAdmin, async (req, res) => {
 router.put('/:id/status', verifyAdmin, async (req, res) => {
   try {
     const { status } = req.body;
-    if (!['Pending', 'Active', 'Rejected'].includes(status)) {
+    if (!['pending', 'active', 'rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 

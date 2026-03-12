@@ -18,14 +18,18 @@ const AdminDashboard = () => {
   const [projects, setProjects] = useState([]);
   const [resources, setResources] = useState([]);
   const [notices, setNotices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const [stRes, prRes, reRes, noRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/admin/students`),
-        axios.get(`${API_BASE_URL}/api/admin/projects`),
-        axios.get(`${API_BASE_URL}/api/admin/resources`),
-        axios.get(`${API_BASE_URL}/api/admin/notices`)
+        axios.get(`${API_BASE_URL}/api/admin/students?t=${Date.now()}`),
+        axios.get(`${API_BASE_URL}/api/admin/projects?t=${Date.now()}`),
+        axios.get(`${API_BASE_URL}/api/admin/resources?t=${Date.now()}`),
+        axios.get(`${API_BASE_URL}/api/admin/notices?t=${Date.now()}`)
       ]);
       setStudents(stRes.data);
       setProjects(prRes.data);
@@ -33,6 +37,9 @@ const AdminDashboard = () => {
       setNotices(noRes.data);
     } catch (error) {
       console.error("Failed to fetch admin data", error);
+      setError("FAILED TO CONNECT TO HQ. CHECK YOUR UPLINK.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -85,8 +92,8 @@ const AdminDashboard = () => {
     } catch { alert('Failed to upload resource'); }
   };
 
-  const pendingStudents = students.filter(s => s.status === 'Pending');
-  const pendingProjects = projects.filter(p => p.status === 'Pending');
+  const pendingStudents = students.filter(s => s.status === 'pending');
+  const pendingProjects = projects.filter(p => p.status === 'pending');
 
   const tabs = [
     { id: 'overview', label: 'Command Center', icon: LayoutDashboard },
@@ -134,6 +141,18 @@ const AdminDashboard = () => {
 
       <div className="flex-1 p-4 pl-0 overflow-y-auto w-full max-w-full z-10">
         <div className="glass-panel-neon h-full p-8 border-pink-500/20 relative overflow-x-hidden">
+          {loading ? (
+            <div className="h-full flex flex-col items-center justify-center space-y-4">
+              <div className="w-12 h-12 border-4 border-pink-500/20 border-t-pink-500 rounded-full animate-spin"></div>
+              <p className="text-pink-400 font-mono text-xs tracking-widest uppercase">SYNCHRONIZING WITH GRID...</p>
+            </div>
+          ) : error ? (
+            <div className="h-full flex flex-col items-center justify-center space-y-4">
+              <XCircle size={64} className="text-red-500" />
+              <p className="text-red-400 font-mono text-xs tracking-widest uppercase font-bold">{error}</p>
+              <button onClick={fetchData} className="btn-neon-secondary text-[10px] py-2 px-6">RETRY UPLINK</button>
+            </div>
+          ) : (
           <AnimatePresence mode="wait">
             
             {activeTab === 'overview' && (
@@ -168,13 +187,13 @@ const AdminDashboard = () => {
                           <td className="font-mono text-pink-200/60">{s.studentId} <br/> {s.department}</td>
                           <td className="font-mono text-pink-200/60">{s.email}</td>
                           <td>
-                            <span className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border rounded ${s.status === 'Active' ? 'bg-green-950/50 text-green-400 border-green-500/50' : s.status === 'Pending' ? 'bg-yellow-950/50 text-yellow-400 border-yellow-500/50' : 'bg-red-950/50 text-red-400 border-red-500/50'}`}>{s.status}</span>
+                            <span className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border rounded ${s.status === 'active' ? 'bg-green-950/50 text-green-400 border-green-500/50' : s.status === 'pending' ? 'bg-yellow-950/50 text-yellow-400 border-yellow-500/50' : 'bg-red-950/50 text-red-400 border-red-500/50'}`}>{s.status}</span>
                           </td>
                           <td className="flex gap-2 items-center p-4">
                             <select value={s.status} onChange={e => stdAction(`${API_BASE_URL}/api/admin/students/${s._id}/status`, 'put', {status: e.target.value})} className="bg-pink-950/40 border border-pink-500/30 text-pink-200 text-xs py-1.5 px-3 rounded uppercase font-bold tracking-wider outline-none">
-                              <option value="Active">Active</option>
-                              <option value="Pending">Pending</option>
-                              <option value="Rejected">Rejected</option>
+                              <option value="active">Active</option>
+                              <option value="pending">Pending</option>
+                              <option value="rejected">Rejected</option>
                             </select>
                             <button onClick={() => window.confirm('Delete subject?') && stdAction(`${API_BASE_URL}/api/admin/students/${s._id}`)} className="text-red-500 hover:text-red-400 bg-red-950/30 p-2 rounded hover:bg-red-900/60 transition-colors"><Trash2 size={16} /></button>
                           </td>
@@ -208,8 +227,60 @@ const AdminDashboard = () => {
               </motion.div>
             )}
 
+            {activeTab === 'projects' && (
+              <motion.div key="projects" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }}>
+                <h3 className="text-4xl font-black uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-pink-400 mb-8">Project Vault</h3>
+                <div className="overflow-x-auto rounded-xl border border-pink-500/20 bg-black/50 shadow-[0_0_20px_rgba(236,72,153,0.05)]">
+                  <table className="table-neon w-full">
+                    <thead>
+                      <tr>
+                        {["Project", "Owner", "Status", "Action"].map(h => <th key={h} className="border-cyan-500/30 bg-pink-950/20 text-pink-300">{h}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {projects.map(p => (
+                        <tr key={p._id}>
+                          <td>
+                            <div className="flex flex-col">
+                              <span className="font-bold text-white uppercase tracking-wider">{p.title}</span>
+                              <span className="text-[10px] text-pink-200/50 line-clamp-1 max-w-[200px]">{p.description}</span>
+                            </div>
+                          </td>
+                          <td className="font-mono text-pink-200/60 text-xs">
+                            {p.studentId?.name} <br/> {p.studentId?.studentId}
+                          </td>
+                          <td>
+                            <span className={`px-3 py-1 text-[10px] font-bold tracking-widest uppercase border rounded ${p.status === 'approved' ? 'bg-green-950/50 text-green-400 border-green-500/50' : p.status === 'pending' ? 'bg-yellow-950/50 text-yellow-400 border-yellow-500/50' : 'bg-red-950/50 text-red-400 border-red-500/50'}`}>{p.status}</span>
+                          </td>
+                          <td className="flex gap-2 items-center p-4">
+                            <select 
+                              value={p.status} 
+                              onChange={e => stdAction(`${API_BASE_URL}/api/admin/projects/${p._id}/status`, 'put', {status: e.target.value})} 
+                              className="bg-pink-950/40 border border-pink-500/30 text-pink-200 text-xs py-1.5 px-3 rounded uppercase font-bold tracking-wider outline-none"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
+                              <option value="rejected">Rejected</option>
+                            </select>
+                            <button onClick={() => window.confirm('Delete project?') && stdAction(`${API_BASE_URL}/api/admin/projects/${p._id}`, 'delete')} className="text-red-500 hover:text-red-400 bg-red-950/30 p-2 rounded hover:bg-red-900/60 transition-colors">
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {projects.length === 0 && (
+                    <div className="p-20 text-center uppercase tracking-widest text-pink-500/40 font-mono text-sm">
+                      No projects registered in the vault.
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
             {/* General fallback for remaining admin tasks to prevent excessive file sizes in demo */}
-            {['projects', 'resources', 'notices'].includes(activeTab) && (
+            {['resources', 'notices'].includes(activeTab) && (
               <motion.div key="tools" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -15 }} className="glass-card-neon p-12 text-center border-dashed border-pink-500/40">
                 <LayoutDashboard size={64} className="mx-auto text-pink-500/40 mb-6" />
                 <h3 className="text-2xl font-black uppercase tracking-widest text-pink-200/70 mb-2">Module Initialized</h3>
@@ -218,6 +289,7 @@ const AdminDashboard = () => {
             )}
 
           </AnimatePresence>
+          )}
         </div>
       </div>
     </div>

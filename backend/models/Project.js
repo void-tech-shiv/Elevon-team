@@ -7,7 +7,7 @@ const projectSchema = new mongoose.Schema({
   githubLink: { type: String, default: '' },
   demoLink: { type: String, default: '' },
   pdfLink: { type: String, default: '' },
-  status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+  status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Project', projectSchema);

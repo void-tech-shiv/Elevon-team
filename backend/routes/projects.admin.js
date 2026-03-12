@@ -7,6 +7,7 @@ const Project = require('../models/Project');
 router.get('/', verifyAdmin, async (req, res) => {
   try {
     const projects = await Project.find().populate('studentId', 'name studentId department year').sort({ createdAt: -1 });
+    console.log("ADMIN_FETCH_COUNT:", projects.length);
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -17,7 +18,7 @@ router.get('/', verifyAdmin, async (req, res) => {
 router.put('/:id/status', verifyAdmin, async (req, res) => {
   try {
     const { status } = req.body;
-    if (!['Pending', 'Approved', 'Rejected'].includes(status)) {
+    if (!['pending', 'approved', 'rejected'].includes(status)) {
       return res.status(400).json({ message: 'Invalid status' });
     }
 
@@ -31,6 +32,7 @@ router.put('/:id/status', verifyAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
 
+    console.log("APPROVAL_UPDATED:", { id: project._id, status: project.status });
     res.json(project);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });

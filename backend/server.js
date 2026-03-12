@@ -18,7 +18,11 @@ app.use(express.json());
 mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/elevon', {
   serverSelectionTimeoutMS: 5000, 
   socketTimeoutMS: 45000,
-}).then(() => console.log('MongoDB Connected Successfully'))
+}).then(() => {
+  console.log('MongoDB Connected Successfully');
+  mongoose.connection.on('error', err => console.error('MongoDB Connection Error after initialization:', err));
+  mongoose.connection.on('disconnected', () => console.warn('MongoDB Disconnected! Reconnecting...'));
+})
   .catch(err => {
     console.error('MongoDB Initial Connection Error:');
     console.error(err.message);
